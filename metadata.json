@@ -1,0 +1,5 @@
+{
+  "name": "AutoAgent - 智能购物助手",
+  "description": "一个由 AI 驱动的购物代理，模拟了解析意图、自动化浏览器操作以查找产品以及生成综合决策简报的工作流程。",
+  "requestFramePermissions": []
+}
