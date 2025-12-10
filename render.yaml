@@ -1,18 +1,35 @@
+# render.yaml - AutoAgent 完整一键部署模板
+
+# 注意：
+# 1️⃣ 替换 envVars 中的 <YOUR_BACKEND_API_KEY> 和 <YOUR_FRONTEND_API_KEY>
+# 2️⃣ 后端优先部署，前端依赖后端 URL（VITE_API_BASE_URL）
+# 3️⃣ 确保前端 package.json 中 build 输出到 dist 目录
+
 services:
+  # 后端 FastAPI
   - type: web
     name: autoagent-backend
     env: python
-    region: singapore       # 建议亚洲更快
     plan: free
     branch: main
-    buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.10
-      - key: GEMINI_API_KEY
-        sync: false         # 你需要手动在 Render 后台填入该值
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_ANON_KEY
-        sync: false
+      - key: API_KEY
+        value: "<YOUR_BACKEND_API_KEY>"
+      - key: OTHER_SECRET
+        value: "<YOUR_OTHER_SECRET>"
+
+  # 前端 Vite/React
+  - type: web
+    name: autoagent-frontend
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s dist -l $PORT
+    envVars:
+      - key: VITE_API_KEY
+        value: "<YOUR_FRONTEND_API_KEY>"
+      - key: VITE_API_BASE_URL
+        value: "https://autoagent-backend.onrender.com"
