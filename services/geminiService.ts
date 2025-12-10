@@ -63,7 +63,7 @@ export const parseUserIntent = async (userQuery: string): Promise<SearchIntent> 
   try {
     const ai = getGoogleClient();
     const response = await retryOperation(() => ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: `提取意图JSON: "${userQuery}"`,
       config: {
         systemInstruction: "你是电商意图分析专家。如果用户提到'100元左右'，设置minPrice=80, maxPrice=120。提到'便宜'设sortBy='price_asc'。提到'热销'设sortBy='sales_desc'。默认'relevance'。",
@@ -103,7 +103,7 @@ export const performRealSearch = async (intent: SearchIntent): Promise<Product[]
     const prompt = `提取 5 个商品。JSON格式: [{title, price(number), shopName, platform(1688/TaoBao/PDD), link, sales(number), tags[]}]`;
 
     const response = await retryOperation(() => ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: `Query: ${searchQuery}\n${prompt}`,
       config: { tools: [{ googleSearch: {} }] },
     }));
@@ -128,7 +128,7 @@ export const performRealSearch = async (intent: SearchIntent): Promise<Product[]
             JSON数组返回: [{title, price, shopName: "推荐工厂", platform: "1688", sales: 1000, tags: ["热销"]}]
         `;
         const fallbackResponse = await retryOperation(() => ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: fallbackPrompt,
             config: { responseMimeType: "application/json" }
         }));
@@ -174,7 +174,7 @@ export const generateShoppingReport = async (intent: SearchIntent, products: Pro
     const dataStr = JSON.stringify(products.slice(0, 5).map(p => ({ t: p.title, p: p.price })));
     const ai = getGoogleClient();
     const response = await retryOperation(() => ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: `生成Markdown简报。关键词:${intent.keyword}。数据:${dataStr}。分析价格区间、利润空间和建议。`
     }));
     return response.text || "";
@@ -199,7 +199,7 @@ export const generateCreativeContent = async (mode: AgentMode, userInput: string
   try {
     const ai = getGoogleClient();
     const response = await retryOperation(() => ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: userInput,
       config: { systemInstruction: "电商文案专家" }
     }));
